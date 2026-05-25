@@ -1,38 +1,55 @@
 import serial
 from pynput.keyboard import Controller, Key
+from pycaw.pycaw import AudioUtilities
 import time
 
-COM_PORT = 'COM3'  # Change this to your Arduino's port
+COM_PORT = "COM3"
 BAUD_RATE = 9600
 
 keyboard = Controller()
 
+device = AudioUtilities.GetSpeakers()
+volume = device.EndpointVolume
+print(device)
 try:
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     print(f"Connected to {COM_PORT}")
-    time.sleep(2)  # Wait for Arduino to initialize
-    
+    time.sleep(2)
+
     while True:
         if ser.in_waiting > 0:
-            data = ser.readline().decode().strip()
+            data = ser.readline().decode(errors="ignore").strip()
+
             if data == "PRESSED1":
-                print("Switch 1 pressed!")
+                print("Play/Pause")
                 keyboard.press(Key.media_play_pause)
-                keyboard.press(Key.media_play_pause)
-                time.sleep(0.1)
-            if data == "PRESSED2":
-                print("Switch 2 pressed!")
+                keyboard.release(Key.media_play_pause)
+
+            elif data == "PRESSED2":
+                print("Previous Track")
                 keyboard.press(Key.media_previous)
-                keyboard.press(Key.media_previous)
-                time.sleep(0.1)
-            if data == "PRESSED3":
-                print("Switch 3 pressed!")
+                keyboard.release(Key.media_previous)
+
+            elif data == "PRESSED3":
+                print("Next Track")
                 keyboard.press(Key.media_next)
-                keyboard.press(Key.media_next)
-                time.sleep(0.1)
-                
+                keyboard.release(Key.media_next)
+
+            elif data.startswith("VOL:"):
+                try:
+                    value = int(data.split(":")[1])
+                    value = max(0, min(100, value))
+                    volume.SetMasterVolumeLevelScalar(value / 100.0, None)
+                    print(f"Volume: {value}")
+                except ValueError:
+                    pass
+
 except Exception as e:
     print(f"Error: {e}")
+
 finally:
-    if ser.is_open:
-        ser.close()
+    try:
+        if ser.is_open:
+            ser.close()
+    except:
+        pass
