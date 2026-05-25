@@ -7,5 +7,7 @@ This program can be used with [Innoswitch](https://github.com/cells-oss/innoswit
 <img width="1322" height="729" alt="sch" src="https://github.com/user-attachments/assets/31e7ee98-908b-4816-a007-cc328322875a" />
 
 black - jumper wire
+
 green - resistor
+
 red - keyboard switch
