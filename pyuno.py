@@ -39,7 +39,12 @@ try:
                 try:
                     value = int(data.split(":")[1])
                     value = max(0, min(100, value))
+
+                    device = AudioUtilities.GetSpeakers()
+                    volume = device.EndpointVolume
+
                     volume.SetMasterVolumeLevelScalar(value / 100.0, None)
+
                     print(f"Volume: {value}")
                 except ValueError:
                     pass
